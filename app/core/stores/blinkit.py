@@ -2,14 +2,16 @@ import logging
 from typing import List
 
 import cloudscraper
+from cloudscraper import CloudScraper
 
+from app.schemas.interface import ScraperBase
 from app.schemas.schemas import Product
 
 
-class Blinkit:
-    def __init__(self, lat: str, lon: str):
+class Blinkit(ScraperBase):
+    def __init__(self, lat: str, lon: str, scraper: CloudScraper = cloudscraper.create_scraper()):
         self.base_url = 'https://blinkit.com/v6/search/products'
-        self.scraper = cloudscraper.create_scraper()
+        self.scraper = scraper
         self.scraper.get('https://blinkit.com/')
         self.cookies = self.scraper.cookies.get_dict()
 
@@ -25,7 +27,7 @@ class Blinkit:
             'Origin': 'https://blinkit.com'
         }
 
-    async def search_products(self, query: str, start: int = 0, size: int = 10) -> List[Product]:
+    async def get_products(self, query: str, start: int = 0, size: int = 10) -> List[Product]:
         params = {
             'start': start,
             'size': size,
@@ -41,14 +43,14 @@ class Blinkit:
             )
 
             if response.status_code == 200:
-                return self.parse_products(response.json())
+                return self.parse_data(response.json())
             return []
 
         except Exception as e:
             logging.log(logging.WARN, f"Request failed for {query} : {e}")
             return []
 
-    def parse_products(self, json_data) -> List[Product]:
+    def parse_data(self, json_data) -> List[Product]:
         products = []
         for product in json_data.get('products', []):
             variant = (product.get('variant_info') or [{}])[0]
@@ -77,11 +79,3 @@ class Blinkit:
             products.append(Product(**product_dict))
 
         return products
-
-    async def get_products(self, query) -> List[Product]:
-        try:
-            data = await self.search_products(query)
-            return data
-        except Exception as e:
-            logging.log(logging.WARN, f"Request failed for {query} : {e}")
-            return []

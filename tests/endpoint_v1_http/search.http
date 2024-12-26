@@ -12,3 +12,7 @@ Accept: application/json
 ###
 GET http://127.0.0.1:8000/api/v1/search/products/blinkit/milk?lat={{lat}}&lon={{lon}}
 Accept: application/json
+
+###
+GET http://127.0.0.1:8000/api/v1/search/products/zepto/milk?lat={{lat}}&lon={{lon}}
+Accept: application/json

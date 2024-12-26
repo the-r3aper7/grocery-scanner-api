@@ -3,14 +3,16 @@ import uuid
 from typing import List, Any
 
 import cloudscraper
+from cloudscraper import CloudScraper
 
+from app.schemas.interface import ScraperBase
 from app.schemas.schemas import Product
 
 
-class Instamart:
-    def __init__(self, lat: str, lon: str):
+class Instamart(ScraperBase):
+    def __init__(self, lat: str, lon: str, scraper: CloudScraper = cloudscraper.create_scraper()):
         self.base_url = 'https://www.swiggy.com/api/instamart/search'
-        self.scraper = cloudscraper.create_scraper()
+        self.scraper = scraper
         self.scraper.get('https://blinkit.com/')
         self.cookies = self.scraper.cookies.get_dict()
 
@@ -25,7 +27,7 @@ class Instamart:
         self.user_location = {"address": "", "lat": lat, "lng": lon, "id": "", "annotation": "", "name": ""}
         self.results = []
 
-    async def search_products(self, query: str, start: int = 0, size: int = 20) -> List[Product]:
+    async def get_products(self, query: str, start: int = 0, size: int = 20) -> List[Product]:
         params = {
             "pageNumber": "0",
             "searchResultsOffset": "0",
@@ -50,22 +52,14 @@ class Instamart:
             )
 
             if response.status_code == 200:
-                return self.parse_products(response.json())
+                return self.parse_data(response.json())
             return []
 
         except Exception as e:
             logging.log(logging.WARN, f"Request failed for {query} : {e}")
             return []
 
-    async def get_products(self, query: str) -> List[Product]:
-        try:
-            data = await self.search_products(query)
-            return data
-        except Exception as e:
-            logging.log(logging.WARN, f"Request failed for {query} : {e}")
-            return []
-
-    def parse_products(self, data: Any) -> List[Product]:
+    def parse_data(self, data: Any) -> List[Product]:
         try:
             products = []
             widgets = data.get('data', {}).get('widgets', [])
