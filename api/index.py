@@ -3,4 +3,4 @@ import uvicorn
 from app.main import app
 
 if __name__ == "__main__":
-    uvicorn.run(app, port=6000)
+    uvicorn.run(app)
