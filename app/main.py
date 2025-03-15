@@ -4,9 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.routes import router as api_router
 
 app = FastAPI(
-    title="FastAPI Project",
-    description="Your API Description",
-    version="1.0.0"
+    title="FastAPI Project", description="Your API Description", version="1.0.0"
 )
 
 # CORS Setup

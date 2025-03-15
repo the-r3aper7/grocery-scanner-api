@@ -16,7 +16,7 @@ class Zepto(ScraperBase):
         self.body = {"query": "", "pageNumber": 0, "mode": "AUTOSUGGEST"}
         self.headers = {
             "Accept": "*/*",
-            "User-Agent": self.scraper.headers['User-Agent'],
+            "User-Agent": self.scraper.headers["User-Agent"],
             "appVersion": "12.24.0",
             "platform": "WEB",
             "Content-Type": "application/json",
@@ -24,10 +24,7 @@ class Zepto(ScraperBase):
 
     async def get_store_id(self) -> str:
         try:
-            response = await self.scraper.get(
-                self.store_id_url,
-                headers=self.headers
-            )
+            response = await self.scraper.get(self.store_id_url, headers=self.headers)
             if response.status_code == 200:
                 store_data = response.json()["storeServiceableResponse"]
                 self.headers["storeId"] = store_data["storeId"]
@@ -49,7 +46,7 @@ class Zepto(ScraperBase):
             response = await self.scraper.post(
                 "https://api.zeptonow.com/api/v3/search",
                 json={"query": query, "pageNumber": 0, "mode": "AUTOSUGGEST"},
-                headers=headers
+                headers=headers,
             )
             return self.parse_data(response.json())
         except Exception as e:
@@ -93,7 +90,7 @@ class Zepto(ScraperBase):
                 currency="INR",
                 deep_link="",
                 is_variation=False,
-                similar_with_id=""
+                similar_with_id="",
             )
             transformed_products.append(product)
         return transformed_products

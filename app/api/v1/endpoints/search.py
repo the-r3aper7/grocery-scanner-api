@@ -17,45 +17,29 @@ async def get_products_route(query: str, lat: str, lon: str) -> ProductsResponse
     try:
         manager = ScraperManager(lat, lon)
         products = await manager.get_products(query)
-        return ProductsResponse(
-            success=True,
-            products=products
-        )
+        return ProductsResponse(success=True, products=products)
     except Exception as e:
         logging.log(logging.WARN, e)
-        return ProductsResponse(
-            success=False,
-            products=None
-        )
+        return ProductsResponse(success=False, products=None)
 
 
 @router.get("/products/{store}/{query}")
-async def get_products_route(store: StoresEnum, query: str, lat: str, lon: str) -> ProductsResponse:
+async def get_products_route(
+    store: StoresEnum, query: str, lat: str, lon: str
+) -> ProductsResponse:
     try:
         if store == StoresEnum.BLINKIT:
             blinkit = Blinkit(lat, lon)
             products = await blinkit.get_products(query)
-            return ProductsResponse(
-                success=True,
-                products=products
-            )
+            return ProductsResponse(success=True, products=products)
         if store == StoresEnum.INSTAMART:
             instamart = Instamart(lat, lon)
             products = await instamart.get_products(query)
-            return ProductsResponse(
-                success=True,
-                products=products
-            )
+            return ProductsResponse(success=True, products=products)
         if store == StoresEnum.ZEPTO:
             zepto = Zepto(lat, lon)
             products = await zepto.get_products(query)
-            return ProductsResponse(
-                success=True,
-                products=products
-            )
+            return ProductsResponse(success=True, products=products)
     except Exception as e:
         logging.log(logging.WARN, e)
-        return ProductsResponse(
-            success=False,
-            products=None
-        )
+        return ProductsResponse(success=False, products=None)
